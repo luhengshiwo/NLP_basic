@@ -5,6 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_moons
 import tensorflow as tf
+from sklearn.metrics import precision_score, recall_score
 m = 1000
 X_moons, y_moons = make_moons(m, noise=0.1, random_state=42)
 # plt.plot(X_moons[y_moons == 1, 0], X_moons[y_moons == 1, 1], 'go', label="Positive")
@@ -48,13 +49,12 @@ training_op = optimizer.minimize(loss)
 
 init = tf.global_variables_initializer()
 
-n_epochs = 20
+n_epochs = 500
 batch_size = 50
 n_batches = int(np.ceil(m / batch_size))
 
 with tf.Session() as sess:
     sess.run(init)
-
     for epoch in range(n_epochs):
         for batch_index in range(n_batches):
             X_batch, y_batch = random_batch(X_train, y_train, batch_size)
@@ -62,17 +62,14 @@ with tf.Session() as sess:
         loss_val = loss.eval({X: X_test, y: y_test})
         if epoch % 100 == 0:
             print("Epoch:", epoch, "\tLoss:", loss_val)
-
+        if epoch % 200 == 0:
+            y_proba_val_dev = y_proba.eval(feed_dict={X: X_test, y: y_test})
+            y_pred_dev = (y_proba_val_dev >= 0.5)
+            print("precision:" + precision_score(y_test, y_pred_dev))
+            print("recall:" + recall_score(y_test, y_pred_dev))
     y_proba_val = y_proba.eval(feed_dict={X: X_test, y: y_test})
-y_pred = (y_proba_val >= 0.5)
-print(y_pred[:5])
-
-#To_do,使用tensorflow的metrics修改这边的metrics
-from sklearn.metrics import precision_score, recall_score
-print(precision_score(y_test, y_pred))
-print(recall_score(y_test, y_pred))
-
-
-
-
-
+    y_pred = (y_proba_val >= 0.5)
+#To_do,使用tensorflow的metrics修改这边的metrics,tensorflow的metrics有坑，在于他要建立一个自己的graph
+print("all performance")
+print("precision:" + precision_score(y_test, y_pred))
+print("recall:" + recall_score(y_test, y_pred))
