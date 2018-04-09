@@ -82,7 +82,7 @@ n_epochs = 1001
 batch_size = 50
 n_batches = int(np.ceil(m / batch_size))
 
-checkpoint_path = "/tmp/my_logreg_model.ckpt"
+checkpoint_path = "./tmp/my_logreg_model.ckpt"
 checkpoint_epoch_path = checkpoint_path + ".epoch"
 final_model_path = "./my_logreg_model"
 
