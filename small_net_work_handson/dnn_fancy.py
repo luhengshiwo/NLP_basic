@@ -35,16 +35,18 @@ with tf.name_scope("loss"):
     xentropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y,
                                                               logits=logits)
     loss = tf.reduce_mean(xentropy, name="loss")
+    loss_summary = tf.summary.scalar('log_loss', loss)
 
 learning_rate = 0.01
 with tf.name_scope("train"):
     optimizer = tf.train.GradientDescentOptimizer(learning_rate)
     training_op = optimizer.minimize(loss)
-    loss_summary = tf.summary.scalar('log_loss', loss)
+
 
 with tf.name_scope("eval"):
     correct = tf.nn.in_top_k(logits, y, 1)
     accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))
+    accuracy_summary = tf.summary.scalar('accuracy', accuracy)
 
 init = tf.global_variables_initializer()
 saver = tf.train.Saver()
@@ -70,6 +72,9 @@ checkpoint_path = "./tmp/my_logreg_model.ckpt"
 checkpoint_epoch_path = checkpoint_path + ".epoch"
 final_model_path = "./my_logreg_model"
 
+best_loss = np.infty
+epochs_without_progress = 0
+max_epochs_without_progress = 50
 
 with tf.Session() as sess:
     if os.path.isfile(checkpoint_epoch_path):
@@ -89,19 +94,24 @@ with tf.Session() as sess:
             X_batch, y_batch = mnist.train.next_batch(batch_size)
             sess.run([training_op, loss_summary],
                      feed_dict={X: X_batch, y: y_batch})
-        loss_val, summary_str = sess.run([loss, loss_summary], feed_dict={
-                                         X: mnist.validation.images, y: mnist.validation.labels})
-        file_writer.add_summary(summary_str, epoch)
-        acc_train = accuracy.eval(feed_dict={X: X_batch, y: y_batch})
-        acc_val = accuracy.eval(feed_dict={X: mnist.validation.images,
-                                           y: mnist.validation.labels})
+        accuracy_val, loss_val, accuracy_summary_str, loss_summary_str = sess.run([
+            accuracy, loss, accuracy_summary, loss_summary], feed_dict={
+            X: mnist.validation.images, y: mnist.validation.labels})
+        file_writer.add_summary(accuracy_summary_str, epoch)
+        file_writer.add_summary(loss_summary_str, epoch)
 
         if epoch % 5 == 0:
-            print(epoch, "Train accuracy:", acc_train, "Val accuracy:", acc_val)
-            print("Epoch:", epoch, "\tLoss:", loss_val)
+            print("epoch:", epoch, "\tVal accuracy:{:.3f}%".format(
+                accuracy_val * 100), "\tLoss:{:.5f}".format(loss_val))
             saver.save(sess, checkpoint_path)
             with open(checkpoint_epoch_path, "wb") as f:
                 f.write(b"%d" % (epoch + 1))
-
-    saver.save(sess, final_model_path)
+            if loss_val < best_loss:
+                saver.save(sess, final_model_path)
+                best_loss = loss_val
+            else:
+                epochs_without_progress += 5
+                if epochs_without_progress > max_epochs_without_progress:
+                    print("Early stopping")
+                    break
     os.remove(checkpoint_epoch_path)
