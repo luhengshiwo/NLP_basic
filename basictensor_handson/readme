@@ -1,4 +1,4 @@
 basic_operations.py包含一些tensor的基本操作
 logistic_regression_handson.py是一个简单的逻辑回归分类算法
-logistic_v2.py包含以下的一些技巧：1，一个随时保存机制 2，一个中断后重启的机制 3，加入了scope 4，可以使用tensorboard 
+logistic_fancy.py包含以下的一些技巧：1，一个随时保存机制 2，一个中断后重启的机制 3，加入了scope 4，可以使用tensorboard 
 search_parameters.py是一个简单的自动进行参数搜索的机制
