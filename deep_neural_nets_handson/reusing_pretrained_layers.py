@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_moons
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
@@ -13,7 +10,7 @@ X_test = mnist.test.images
 y_train = mnist.train.labels.astype("int")
 y_test = mnist.test.labels.astype("int")
 
-n_inputs = 28*28  # MNIST
+n_inputs = 28 * 28  # MNIST
 n_hidden1 = 300
 n_hidden2 = 100
 n_outputs = 10
@@ -24,9 +21,9 @@ y = tf.placeholder(tf.int64, shape=(None), name="y")
 
 with tf.name_scope("dnn"):
     hidden1 = tf.layers.dense(X, n_hidden1, name="hidden1",
-                           activation=tf.nn.relu)
+                              activation=tf.nn.relu)
     hidden2 = tf.layers.dense(hidden1, n_hidden2, name="hidden2",
-                           activation=tf.nn.relu)
+                              activation=tf.nn.relu)
     logits = tf.layers.dense(hidden2, n_outputs, name="outputs")
 
 with tf.name_scope("loss"):
@@ -49,15 +46,13 @@ saver = tf.train.Saver()
 n_epochs = 4
 batch_size = 50
 
-with tf.Session() as sess:
-    init.run()
-    for epoch in range(n_epochs):
-        for iteration in range(mnist.train.num_examples // batch_size):
-            X_batch, y_batch = mnist.train.next_batch(batch_size)
-            sess.run(training_op, feed_dict={X: X_batch, y: y_batch})
-        acc_train = accuracy.eval(feed_dict={X: X_batch, y: y_batch})
-        acc_val = accuracy.eval(feed_dict={X: mnist.validation.images,
-                                            y: mnist.validation.labels})
-        print(epoch, "Train accuracy:", acc_train, "Val accuracy:", acc_val)
+checkpoint_path = "./my_model_final.ckpt"
 
-    save_path = saver.save(sess, "./my_model_final.ckpt")
+with tf.Session() as sess:
+    saver.restore(sess, checkpoint_path)
+    print('successful restore checkpoint!')
+    print("begin evaluate:")
+    accuracy_val, loss_val = sess.run([accuracy, loss], feed_dict={
+        X: mnist.validation.images, y: mnist.validation.labels})
+    print("Val accuracy:{:.3f}%".format(
+        accuracy_val * 100), "\tLoss:{:.5f}".format(loss_val))

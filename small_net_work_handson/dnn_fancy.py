@@ -9,7 +9,7 @@ from datetime import datetime
 import os
 from tensorflow.examples.tutorials.mnist import input_data
 
-mnist = input_data.read_data_sets("./data/")
+mnist = input_data.read_data_sets("../data/")
 X_train = mnist.train.images
 X_test = mnist.test.images
 y_train = mnist.train.labels.astype("int")
@@ -25,11 +25,14 @@ y = tf.placeholder(tf.int64, shape=(None), name="y")
 
 
 with tf.name_scope("dnn"):
-    hidden1 = tf.layers.dense(X, n_hidden1, name="hidden1",
+    he_init = tf.contrib.layers.variance_scaling_initializer()
+    xavier = tf.contrib.layers.xavier_initializer()
+    hidden1 = tf.layers.dense(X, n_hidden1, name="hidden1", kernel_initializer=he_init,
                               activation=tf.nn.relu)
-    hidden2 = tf.layers.dense(hidden1, n_hidden2, name="hidden2",
+    hidden2 = tf.layers.dense(hidden1, n_hidden2, name="hidden2", kernel_initializer=he_init,
                               activation=tf.nn.relu)
-    logits = tf.layers.dense(hidden2, n_outputs, name="outputs")
+    logits = tf.layers.dense(
+        hidden2, n_outputs, name="outputs", kernel_initializer=he_init)
 
 with tf.name_scope("loss"):
     xentropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y,
