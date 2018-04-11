@@ -1,6 +1,6 @@
 Tensorflow 框架检索
 ====
-# data
+# data文件夹保存了一些基本数据
 # 1 基本操作 basictensor_handson文件夹
 ## 1.1 basic_operations.py
 * 包含一些基本的tensorflow操作
