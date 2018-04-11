@@ -21,7 +21,7 @@ learning_rate = 0.01
 
 X = tf.placeholder(tf.float32, shape=(None, n_inputs), name="X")
 y = tf.placeholder(tf.int64, shape=(None), name="y")
-
+training = tf.placeholder_with_default(False, shape=(), name='training')
 
 
 #这边有变化
@@ -36,13 +36,14 @@ my_dense_layer2 = partial(
     tf.layers.dense, activation=tf.nn.relu,
     kernel_regularizer=tc.layers.l2_regularizer(scale))
 
-
+dropout_rate = 0.5
 with tf.name_scope("dnn"):
     hidden1 = my_dense_layer1(X, n_hidden1, name="hidden1",
                            activation=tf.nn.relu)
     hidden2 = my_dense_layer1(hidden1, n_hidden2, name="hidden2",
                            activation=tf.nn.relu)
-    logits = my_dense_layer2(hidden2, n_outputs, name="outputs")
+    hidden2_drop = tf.layers.dropout(hidden2, dropout_rate, training=training)
+    logits = my_dense_layer2(hidden2_drop, n_outputs, name="outputs")
 
 with tf.name_scope("loss"):
     xentropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y,
@@ -72,10 +73,13 @@ with tf.Session() as sess:
     for epoch in range(n_epochs):
         for iteration in range(mnist.train.num_examples // batch_size):
             X_batch, y_batch = mnist.train.next_batch(batch_size)
-            sess.run(training_op, feed_dict={X: X_batch, y: y_batch})
+            sess.run(training_op, feed_dict={training:True,X: X_batch, y: y_batch})
         acc_train = accuracy.eval(feed_dict={X: X_batch, y: y_batch})
         acc_val = accuracy.eval(feed_dict={X: mnist.validation.images,
                                             y: mnist.validation.labels})
         print(epoch, "Train accuracy:", acc_train, "Val accuracy:", acc_val)
 
     save_path = saver.save(sess, "./my_model_final.ckpt")
+
+
+#regularization and dropout

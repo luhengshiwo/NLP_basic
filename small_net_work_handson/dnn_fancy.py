@@ -118,3 +118,4 @@ with tf.Session() as sess:
                     print("Early stopping")
                     break
     os.remove(checkpoint_epoch_path)
+# tensorboard --logdir=tf_logs

@@ -16,16 +16,16 @@ def save_fig(fig_id, tight_layout=True):
 
 
 #Xavier and He initialization
-# n_inputs = 28 * 28  # MNIST
-# n_hidden1 = 300
+n_inputs = 28 * 28  # MNIST
+n_hidden1 = 300
 
-# X = tf.placeholder(tf.float32, shape=(None, n_inputs), name="X")
-# he_init = tf.contrib.layers.variance_scaling_initializer()
-# Xavier = tf.contrib.layers.xavier_initializer()
-# hidden1 = tf.layers.dense(X, n_hidden1, activation=tf.nn.relu,
-#                           kernel_initializer=he_init, name="hidden1")
-# hidden2 = tf.layers.dense(X, n_hidden1, activation=tf.nn.relu,
-#                           kernel_initializer=Xavier, name="hidden2")
+X = tf.placeholder(tf.float32, shape=(None, n_inputs), name="X")
+he_init = tf.contrib.layers.variance_scaling_initializer()
+Xavier = tf.contrib.layers.xavier_initializer()
+hidden1 = tf.layers.dense(X, n_hidden1, activation=tf.nn.relu,
+                          kernel_initializer=he_init, name="hidden1")
+hidden2 = tf.layers.dense(X, n_hidden1, activation=tf.nn.relu,
+                          kernel_initializer=Xavier, name="hidden2")
 
 z = np.linspace(-5, 5, 200)
 
