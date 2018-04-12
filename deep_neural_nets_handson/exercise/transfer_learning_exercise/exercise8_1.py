@@ -31,7 +31,7 @@ epochs_without_progress = 0
 max_epochs_without_progress = 50
 checkpoint_path = "./tmp/my_logreg_model.ckpt"
 checkpoint_epoch_path = checkpoint_path + ".epoch"
-final_model_path = "./my_logreg_model"
+final_model_path = "./my_logreg_model_0_to_4"
 
 
 X = tf.placeholder(tf.float32, shape=(None, n_inputs), name="X")
