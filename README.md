@@ -35,11 +35,19 @@ Tensorflow 框架检索
 * 中断重启机制
 # 4 一个深度神经网络 deep_beural_nets_handson文件夹
 ## 4.1 basic_operation.py
+* 几个激活函数的图
+* batch_normlization
+* 梯度剪裁的方法
 ## 4.2 resuing_pretrained_layers.py
+* 使用已经训练好的模型
 ## 4.3 resuing_other_frameworks.py
+* 使用其它框架生成模型的参数
 ## 4.4 learning_rate_decay_handson.py
+* 学习率衰减，注意AdaGrad RMSProp Adam 不需要learning_rate_decay
 ## 4.5 regularization_and_dropout.py
+* 如何进行正则化和drop_out
 ## 4.6 max_norm_regularization_handson.py
+* 如何将权重的范数限定在一定范围内
 ## 4.7 transfer_learning文件夹
 * origin_learning_handson.py
   * 一个简单的6层神经网络，为了输出一个保存好的模型
@@ -53,8 +61,13 @@ Tensorflow 框架检索
 ### deep_learning文件夹
 * exercise8.1
 ### transfer_learning_exercise文件夹
-*
+* 重用8.1
+* freeze掉前面几层
+* 缓存freeze的层，速度确实快了
 ### pretraining_on_auxiliary_task文件夹
+#### basemodel.py
+* 训练一个模型，有两个dnn，并输入两个图片，比较两个图片是否为一个手写体
+
 
 
 
