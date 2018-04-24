@@ -9,6 +9,8 @@ from gensim.models import word2vec
 import time
 import os
 
+
+
 dir_path = "/Users/luheng/dureader/data/preprocessed/trainset/"
 file_path = dir_path + 'train.conll'
 
