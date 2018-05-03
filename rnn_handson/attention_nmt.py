@@ -29,6 +29,8 @@ dev_source_path = father_path + '/data/cutdev128.zh'
 dev_target_path = father_path + '/data/dev128.en'
 beam_width = 10
 length_penalty_weight = 0.0
+num = len(open(source_path).readlines())
+
 
 # 这边的输入可能需要转置
 with tf.name_scope("placeholder"):
@@ -54,7 +56,6 @@ with tf.name_scope('encode'):
     encoder_cell = tf.nn.rnn_cell.BasicLSTMCell(num_units)
     encoder_outputs, encoder_state = tf.nn.dynamic_rnn(
         encoder_cell, encoder_emb_inp, sequence_length=source_sequence_length, time_major=True, dtype=tf.float32)
-
 
 with tf.name_scope('decode'):
     # decode
@@ -155,14 +156,15 @@ init = tf.global_variables_initializer()
 with tf.Session() as sess:
     sess.run(init)
     for epoch in range(n_epochs):
-        for i in range(int(128 / batch_size)):
+        for i in range(int(num / batch_size)):
             encoder_inputs_batch, decoder_inputs_batch, decoder_outputs_batch, encoder_length_batch, decoder_length_batch = generate_batch(source_path, target_path,
                                                                                                                                            batch_size)
             _, loss = sess.run([update_step, train_loss], feed_dict={encoder_inputs_x: encoder_inputs_batch,
                                                                      decoder_inputs_y1: decoder_inputs_batch, decoder_outputs_y2: decoder_outputs_batch,
                                                                      source_sequence_length: encoder_length_batch, target_sequence_length: decoder_length_batch})
+        if i % 10 == 0:
             print(str(epoch) + ':' + str(loss))
-        if epoch % 5 == 0:
+        if epoch % 1 == 0:
             ground_truth_file = 'ground_truth_file'
             trans_file = 'trans_file'
             if os.path.isfile(ground_truth_file):

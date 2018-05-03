@@ -25,8 +25,7 @@ unk = 'uuunnnkkk'
 tgt_sos_id = '\<s>'
 tgt_eos_id = '\</s>'
 pad_id = '<pad>'
-batch_size = 32
-max_length = 200
+batch_size = 128
 
 s_voc = []
 s_vec = []
