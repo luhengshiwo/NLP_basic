@@ -65,11 +65,11 @@ with tf.Session() as sess:
         if epoch % 200 == 0:
             y_proba_val_dev = y_proba.eval(feed_dict={X: X_test, y: y_test})
             y_pred_dev = (y_proba_val_dev >= 0.5)
-            print("precision:" + precision_score(y_test, y_pred_dev))
-            print("recall:" + recall_score(y_test, y_pred_dev))
+            print("precision:" + str(precision_score(y_test, y_pred_dev)))
+            print("recall:" + str(recall_score(y_test, y_pred_dev)))
     y_proba_val = y_proba.eval(feed_dict={X: X_test, y: y_test})
     y_pred = (y_proba_val >= 0.5)
 #To_do,使用tensorflow的metrics修改这边的metrics,tensorflow的metrics有坑，在于他要建立一个自己的graph
 print("all performance")
-print("precision:" + precision_score(y_test, y_pred))
-print("recall:" + recall_score(y_test, y_pred))
+print("precision:" + str(precision_score(y_test, y_pred)))
+print("recall:" + str(recall_score(y_test, y_pred)))
