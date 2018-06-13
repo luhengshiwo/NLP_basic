@@ -78,7 +78,7 @@ with tf.name_scope('decode'):
         #将2，3，4输入到basicdecoder中
         train_decoder = tc.seq2seq.BasicDecoder(
             decoder_cell_wrap, train_helper, init_s, output_layer=projection_layer)
-        training_outputs, _, _ = tc.seq2seq.dynamic_decode(
+        training_outputs, final_state, _ = tc.seq2seq.dynamic_decode(
             train_decoder, output_time_major=True, swap_memory=True, maximum_iterations=max_target_sequence_length)
 
     with tf.variable_scope("decode_outputs", reuse=True):
@@ -163,6 +163,7 @@ with tf.Session() as sess:
                                                                      decoder_inputs_y1: decoder_inputs_batch, decoder_outputs_y2: decoder_outputs_batch,
                                                                      source_sequence_length: encoder_length_batch, target_sequence_length: decoder_length_batch})
         if i % 10 == 0:
+            print()
             print(str(epoch) + ':' + str(loss))
         if epoch % 1 == 0:
             ground_truth_file = 'ground_truth_file'
