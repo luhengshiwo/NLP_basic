@@ -55,54 +55,80 @@ checkpoint_epoch_path = checkpoint_path + ".epoch"
 final_model_path = "model/my_logreg_model"
 
 with tf.name_scope("placeholder"):
-    encode_x1 = tf.placeholder(tf.int32, shape=[batch_size, None])
-    encode_x2 = tf.placeholder(tf.int32, shape=[batch_size, None])
-    x1 = tf.transpose(encode_x1, (1, 0))
-    x2 = tf.transpose(encode_x2, (1, 0))
-    x1_sequence_length = tf.placeholder(tf.int32, shape=[batch_size])
-    x2_sequence_length = tf.placeholder(tf.int32, shape=[batch_size])
+    encode_question = tf.placeholder(tf.int32, shape=[batch_size, None])
+    encode_answer = tf.placeholder(tf.int32, shape=[batch_size, None])
+    question = tf.transpose(encode_question, (1, 0))
+    answer = tf.transpose(encode_answer, (1, 0))
+    question_sequence_length = tf.placeholder(tf.int32, shape=[batch_size])
+    answer_sequence_length = tf.placeholder(tf.int32, shape=[batch_size])
     simi_values = tf.placeholder(tf.int32, shape=[batch_size])
     keep_prob = tf.placeholder_with_default(1.0, shape=())
     max_target_sequence_length = tf.reduce_max(
-        x2_sequence_length, name='max_target_len')
-with tf.name_scope('wmbeddings'):
+        answer_sequence_length, name='max_target_len')
+
+with tf.name_scope('word_embeddings'):
     embeddings = tf.Variable(vec, trainable=True, name="embeds")
-    x1_emb = tf.nn.embedding_lookup(embeddings, x1)
-    x2_emb = tf.nn.embedding_lookup(embeddings, x2)
+    question_emb = tf.nn.embedding_lookup(embeddings, question)
+    answer_emb = tf.nn.embedding_lookup(embeddings, answer)
+
 with tf.name_scope("decode"):
-    with tf.variable_scope("x1"):
-        x1_cell = tf.nn.rnn_cell.GRUCell(num_units)
-        x1_drop = tc.rnn.DropoutWrapper(
-            x1_cell, input_keep_prob=keep_prob)
-        x1_outputs, x1_state = tf.nn.dynamic_rnn(
-            x1_drop, x1_emb, sequence_length=x1_sequence_length, time_major=True, dtype=tf.float32)
-    with tf.variable_scope("x2"):
-        attention_states = tf.transpose(x1_outputs, (1, 0, 2))
-        x2_cell = tf.nn.rnn_cell.GRUCell(num_units)
-        x2_drop = tc.rnn.DropoutWrapper(
-            x2_cell, input_keep_prob=keep_prob)
-        attention_mechanism = tc.seq2seq.LuongAttention(
-            num_units, attention_states, memory_sequence_length=x1_sequence_length)
+    # with tf.variable_scope("question"):
+    #     question_cell = tf.nn.rnn_cell.GRUCell(num_units)
+    #     question_drop = tc.rnn.DropoutWrapper(
+    #         question_cell, input_keep_prob=keep_prob)
+    #     question_outputs, question_state = tf.nn.dynamic_rnn(
+    #         question_drop, question_emb, sequence_length=question_sequence_length, time_major=True, dtype=tf.float32)
+
+    with tf.variable_scope("question"):
+        forward_cell = tf.nn.rnn_cell.GRUCell(num_units)
+        forward_cell_drop = tc.rnn.DropoutWrapper(
+            forward_cell, input_keep_prob=keep_prob)
+        backward_cell = tf.nn.rnn_cell.GRUCell(num_units)
+        backward_cell_drop = tc.rnn.DropoutWrapper(
+            backward_cell, input_keep_prob=keep_prob)
+        bi_question_outputs, bi_question_state = tf.nn.bidirectional_dynamic_rnn(
+            forward_cell_drop, backward_cell_drop, question_emb, sequence_length=question_sequence_length, time_major=True, dtype=tf.float32)
+        question_state = tf.add_n(bi_question_state)
+        question_outputs = tf.add_n(bi_question_outputs)
+
+    with tf.variable_scope("answer"):
+        attention_states = tf.transpose(question_outputs, (1, 0, 2))
+        answer_cell = tf.nn.rnn_cell.GRUCell(num_units)
+        answer_drop = tc.rnn.DropoutWrapper(
+            answer_cell, input_keep_prob=keep_prob)
+        """
+        LuongAttention
+        """
+        # attention_mechanism = tc.seq2seq.LuongAttention(
+        #     num_units, attention_states, memory_sequence_length=question_sequence_length)
+        # decoder_cell_wrap = tc.seq2seq.AttentionWrapper(
+        #     answer_drop, attention_mechanism, attention_layer_size=num_units)
+        """
+        BahdanauAttention
+        """
+        attention_mechanism = tc.seq2seq.BahdanauAttention(
+            num_units, attention_states, memory_sequence_length=question_sequence_length)
         decoder_cell_wrap = tc.seq2seq.AttentionWrapper(
-            x2_cell, attention_mechanism, attention_layer_size=num_units)
+            answer_drop, attention_mechanism, attention_layer_size=num_units)
         init_s = decoder_cell_wrap.zero_state(
-            dtype=tf.float32, batch_size=batch_size).clone(cell_state=x1_state)
+            dtype=tf.float32, batch_size=batch_size).clone(cell_state=question_state)
         # projection_layer = tf.layers.Dense(tgt_vocab_size, use_bias=False)
         train_helper = tc.seq2seq.TrainingHelper(
-            x2_emb, x2_sequence_length, time_major=True)
+            answer_emb, answer_sequence_length, time_major=True)
         train_decoder = tc.seq2seq.BasicDecoder(
             decoder_cell_wrap, train_helper, init_s, output_layer=None)
-        training_outputs, x2_state, _ = tc.seq2seq.dynamic_decode(
+        training_outputs, answer_state, _ = tc.seq2seq.dynamic_decode(
             train_decoder, output_time_major=True, swap_memory=True, maximum_iterations=max_target_sequence_length)
 
 with tf.name_scope("logits"):
-    logits = tf.layers.dense(x2_state.cell_state, n_outputs)
+    logits = tf.layers.dense(answer_state.cell_state, n_outputs)
     labels = tf.reshape(simi_values, (batch_size, 1))
     labels = tf.cast(labels, tf.float32)
     xentropy = tf.nn.sigmoid_cross_entropy_with_logits(
         labels=labels, logits=logits)
     loss = tf.reduce_mean(xentropy)
     loss_summary = tf.summary.scalar('log_loss', loss)
+
 with tf.name_scope("optimizer"):
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
     training_op = optimizer.minimize(loss)
@@ -154,8 +180,8 @@ def do_train(args):
                 source_batch_pad, source_seq_length, target_batch_pad, target_seq_length, simi_input_batch = next(
                     train_gen)
                 pred_, logits_, loss_, loss_summary_, _ = sess.run([pred, logits, loss, loss_summary, training_op], feed_dict={
-                    encode_x1: source_batch_pad, encode_x2: target_batch_pad,
-                    simi_values: simi_input_batch, x1_sequence_length: source_seq_length, x2_sequence_length: target_seq_length, keep_prob: train_keep_prob})
+                    encode_question: source_batch_pad, encode_answer: target_batch_pad,
+                    simi_values: simi_input_batch, question_sequence_length: source_seq_length, answer_sequence_length: target_seq_length, keep_prob: train_keep_prob})
                 y_true = np.array(simi_input_batch)
                 precision = metrics.precision_score(y_true, pred_)
                 recall = metrics.recall_score(y_true, pred_)
@@ -170,7 +196,7 @@ def do_train(args):
                         "\tepoch_loss:{:.5f}".format(loss_))
             if epoch % 1 == 0:
                 num = int(dev_num / batch_size)
-                dev_accuracy = 0.0
+                # dev_accuracy = 0.0
                 dev_loss = 0.0
                 y_true = []
                 y_pred = []
@@ -178,8 +204,8 @@ def do_train(args):
                     dev1_pad, dev1_seq_length, dev2_pad, dev2_seq_length, dev_simi_batch = next(
                         dev_gen)
                     pred_dev, loss_dev = sess.run([pred, loss], feed_dict={
-                        encode_x1: dev1_pad, encode_x2: dev2_pad,
-                        simi_values: dev_simi_batch, x1_sequence_length: dev1_seq_length, x2_sequence_length: dev2_seq_length})
+                        encode_question: dev1_pad, encode_answer: dev2_pad,
+                        simi_values: dev_simi_batch, question_sequence_length: dev1_seq_length, answer_sequence_length: dev2_seq_length})
                     y_true = np.append(y_true, dev_simi_batch)
                     y_pred = np.append(y_pred, pred_dev)
                     dev_loss += loss_dev
@@ -215,8 +241,8 @@ def do_evaluate(args):
             for _ in fin:
                 ids, source, source_seq_length, target, target_seq_length = next(
                     test_gen)
-                preds = sess.run(pred, feed_dict={encode_x1: source, encode_x2: target,
-                                                  x1_sequence_length: source_seq_length, x2_sequence_length: target_seq_length})
+                preds = sess.run(pred, feed_dict={encode_question: source, encode_answer: target,
+                                                  question_sequence_length: source_seq_length, answer_sequence_length: target_seq_length})
                 predict = preds[0]
                 fout.write(ids[0] + '\t' + str(predict[0]) + '\n')
     logger.info('evaluation done! out_path:{}'.format(outpath))
@@ -235,13 +261,13 @@ def do_shell(_):
             elif sentence == '':
                 logger.info("请不要打回车玩哦！")
             elif '__user__' not in sentence:
-                logger.info("请输入正确的格式！提示：Question__user__Answer") 
+                logger.info("请输入正确的格式！提示：Question__user__Answer;退出请输入：bye")
             else:
                 shell_gen = generate_batch_shell(sentence)
                 source, source_seq_length, target, target_seq_length = next(
                     shell_gen)
-                preds = sess.run(pred, feed_dict={encode_x1: source, encode_x2: target,
-                                                  x1_sequence_length: source_seq_length, x2_sequence_length: target_seq_length})
+                preds = sess.run(pred, feed_dict={encode_question: source, encode_answer: target,
+                                                  question_sequence_length: source_seq_length, answer_sequence_length: target_seq_length})
                 predict = preds[0]
                 logger.info("输入原句：{}".format(sentence))
                 if predict[0] == 1:
