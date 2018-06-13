@@ -1,24 +1,29 @@
-2018-06-13 15:48:09,615:INFO:epoch:0	epoch_loss:0.57176
-2018-06-13 15:48:10,169:INFO:epoch:0	Dev loss:0.50830	precision_dev:0.72340	recall_dev:0.69388	f1_dev:0.70833
-2018-06-13 15:48:10,377:INFO:save epoch:0
-2018-06-13 15:48:49,856:INFO:epoch:1	epoch_loss:0.57654
-2018-06-13 15:48:50,205:INFO:epoch:1	Dev loss:0.47505	precision_dev:0.73000	recall_dev:0.74490	f1_dev:0.73737
-2018-06-13 15:48:50,329:INFO:save epoch:1
-2018-06-13 15:49:33,074:INFO:epoch:2	epoch_loss:0.54851
-2018-06-13 15:49:33,403:INFO:epoch:2	Dev loss:0.46222	precision_dev:0.74227	recall_dev:0.73469	f1_dev:0.73846
-2018-06-13 15:49:33,526:INFO:save epoch:2
-2018-06-13 15:50:15,261:INFO:epoch:3	epoch_loss:0.50685
-2018-06-13 15:50:15,619:INFO:epoch:3	Dev loss:0.45899	precision_dev:0.70192	recall_dev:0.74490	f1_dev:0.72277
-2018-06-13 15:50:57,635:INFO:epoch:4	epoch_loss:0.47924
-2018-06-13 15:50:57,964:INFO:epoch:4	Dev loss:0.44624	precision_dev:0.71000	recall_dev:0.72449	f1_dev:0.71717
-2018-06-13 15:51:40,857:INFO:epoch:5	epoch_loss:0.47409
-2018-06-13 15:51:41,278:INFO:epoch:5	Dev loss:0.45014	precision_dev:0.72449	recall_dev:0.72449	f1_dev:0.72449
-2018-06-13 15:52:24,384:INFO:epoch:6	epoch_loss:0.43601
-2018-06-13 15:52:24,792:INFO:epoch:6	Dev loss:0.45390	precision_dev:0.72642	recall_dev:0.78571	f1_dev:0.75490
-2018-06-13 15:52:24,923:INFO:save epoch:6
-2018-06-13 15:53:06,144:INFO:epoch:7	epoch_loss:0.40984
-2018-06-13 15:53:06,493:INFO:epoch:7	Dev loss:0.47904	precision_dev:0.75269	recall_dev:0.71429	f1_dev:0.73298
-2018-06-13 15:53:46,573:INFO:epoch:8	epoch_loss:0.44590
-2018-06-13 15:53:46,908:INFO:epoch:8	Dev loss:0.45955	precision_dev:0.72449	recall_dev:0.72449	f1_dev:0.72449
-2018-06-13 15:54:27,364:INFO:epoch:9	epoch_loss:0.41822
-2018-06-13 15:54:27,716:INFO:epoch:9	Dev loss:0.51200	precision_dev:0.70909	recall_dev:0.79592	f1_dev:0.75000
+2018-06-13 18:15:08,178:INFO:epoch:0	epoch_loss:0.82001
+2018-06-13 18:15:08,663:INFO:epoch:0	Dev loss:0.51384	precision_dev:0.63014	recall_dev:0.56098	f1_dev:0.59355
+2018-06-13 18:15:08,856:INFO:save epoch:0
+2018-06-13 18:15:31,328:INFO:epoch:1	epoch_loss:0.81063
+2018-06-13 18:15:31,553:INFO:epoch:1	Dev loss:0.49611	precision_dev:0.67213	recall_dev:0.50000	f1_dev:0.57343
+2018-06-13 18:15:53,972:INFO:epoch:2	epoch_loss:0.62444
+2018-06-13 18:15:54,198:INFO:epoch:2	Dev loss:0.48863	precision_dev:0.66667	recall_dev:0.53659	f1_dev:0.59459
+2018-06-13 18:15:54,317:INFO:save epoch:2
+2018-06-13 18:16:17,100:INFO:epoch:3	epoch_loss:0.59288
+2018-06-13 18:16:17,331:INFO:epoch:3	Dev loss:0.46808	precision_dev:0.67123	recall_dev:0.59756	f1_dev:0.63226
+2018-06-13 18:16:17,449:INFO:save epoch:3
+2018-06-13 18:16:40,253:INFO:epoch:4	epoch_loss:0.51076
+2018-06-13 18:16:40,484:INFO:epoch:4	Dev loss:0.45547	precision_dev:0.69014	recall_dev:0.59756	f1_dev:0.64052
+2018-06-13 18:16:40,604:INFO:save epoch:4
+2018-06-13 18:17:04,648:INFO:epoch:5	epoch_loss:0.53259
+2018-06-13 18:17:04,910:INFO:epoch:5	Dev loss:0.45687	precision_dev:0.66667	recall_dev:0.63415	f1_dev:0.65000
+2018-06-13 18:17:05,030:INFO:save epoch:5
+2018-06-13 18:17:28,283:INFO:epoch:6	epoch_loss:0.58535
+2018-06-13 18:17:28,518:INFO:epoch:6	Dev loss:0.44679	precision_dev:0.68421	recall_dev:0.63415	f1_dev:0.65823
+2018-06-13 18:17:28,637:INFO:save epoch:6
+2018-06-13 18:17:52,256:INFO:epoch:7	epoch_loss:0.56242
+2018-06-13 18:17:52,497:INFO:epoch:7	Dev loss:0.44173	precision_dev:0.70270	recall_dev:0.63415	f1_dev:0.66667
+2018-06-13 18:17:52,613:INFO:save epoch:7
+2018-06-13 18:18:15,983:INFO:epoch:8	epoch_loss:0.49439
+2018-06-13 18:18:16,207:INFO:epoch:8	Dev loss:0.48009	precision_dev:0.68571	recall_dev:0.58537	f1_dev:0.63158
+2018-06-13 18:18:39,465:INFO:epoch:9	epoch_loss:0.50030
+2018-06-13 18:18:39,698:INFO:epoch:9	Dev loss:0.48480	precision_dev:0.68000	recall_dev:0.62195	f1_dev:0.64968
+2018-06-13 18:19:10,649:INFO:evaluation done! out_path:data/out.csv
+2018-06-13 18:20:07,578:INFO:evaluation done! out_path:data/out.csv

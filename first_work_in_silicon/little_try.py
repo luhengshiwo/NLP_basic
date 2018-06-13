@@ -11,6 +11,7 @@ import tensorflow as tf
 import tensorflow.contrib as tc
 from batch_data import generate_batch
 from batch_data import generate_batch_shell
+from batch_data import generate_batch_evaluate
 from batch_data import embeddings
 from datetime import datetime
 from util import Progbar
@@ -26,9 +27,6 @@ config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 
 logger = logging.getLogger("little_try")
-# logger.setLevel(logging.DEBUG)
-# logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
-# logging.FileHandler('result.log')
 formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
 fh = logging.FileHandler('result.log')
 fh.setLevel(logging.DEBUG)
@@ -99,17 +97,17 @@ with tf.name_scope("decode"):
         """
         LuongAttention
         """
-        # attention_mechanism = tc.seq2seq.LuongAttention(
-        #     num_units, attention_states, memory_sequence_length=question_sequence_length)
-        # decoder_cell_wrap = tc.seq2seq.AttentionWrapper(
-        #     answer_drop, attention_mechanism, attention_layer_size=num_units)
-        """
-        BahdanauAttention
-        """
-        attention_mechanism = tc.seq2seq.BahdanauAttention(
+        attention_mechanism = tc.seq2seq.LuongAttention(
             num_units, attention_states, memory_sequence_length=question_sequence_length)
         decoder_cell_wrap = tc.seq2seq.AttentionWrapper(
             answer_drop, attention_mechanism, attention_layer_size=num_units)
+        """
+        BahdanauAttention
+        """
+        # attention_mechanism = tc.seq2seq.BahdanauAttention(
+        #     num_units, attention_states, memory_sequence_length=question_sequence_length)
+        # decoder_cell_wrap = tc.seq2seq.AttentionWrapper(
+        #     answer_drop, attention_mechanism, attention_layer_size=num_units)
         init_s = decoder_cell_wrap.zero_state(
             dtype=tf.float32, batch_size=batch_size).clone(cell_state=question_state)
         # projection_layer = tf.layers.Dense(tgt_vocab_size, use_bias=False)
@@ -235,8 +233,7 @@ def do_evaluate(args):
     outpath = args.output_data
     with tf.Session() as sess:
         saver.restore(sess, checkpoint_path)
-        test_gen = generate_batch(
-            inpath, is_train=False, batch_size=batch_size)
+        test_gen = generate_batch_evaluate(inpath)
         with open(inpath, 'r') as fin, open(outpath, 'w') as fout:
             for _ in fin:
                 ids, source, source_seq_length, target, target_seq_length = next(
@@ -286,7 +283,7 @@ if __name__ == '__main__':
     command_parser.add_argument(
         '-td', '--train-data', type=str, default="data/train.csv", help="Training data")
     command_parser.add_argument(
-        '-dd', '--dev-data', type=str, default="data/dev.csv", help="Dev data")
+        '-dd', '--dev-data', type=str, default="data/test.csv", help="Dev data")
     command_parser.set_defaults(func=do_train)
 
     command_parser = subparsers.add_parser('evaluate', help=' ')

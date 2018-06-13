@@ -22,6 +22,7 @@ vocab_path = 'data/vocab.txt'
 vec_path = 'data/vec.txt'
 unk = Config.unk
 pad = Config.pad
+batch_size = Config.batch_size
 voc = []
 vec = []
 embedding_size = Config.embedding_size
@@ -114,14 +115,39 @@ def generate_batch(source_path, batch_size, is_train=True, shuffle=False):
             ids_batch = ids[start:end]
             yield (ids_batch,first_batch_pad, first_seq_length,second_batch_pad, second_seq_length)
 
-def generate_batch_shell(source_sentence, batch_size=32):
+def generate_batch_evaluate(source_path, batch_size=batch_size):
+    source_file = open(source_path)
+    ids = []
+    first = []
+    second = []
+    for line in source_file:
+        lines = line.strip().split('\t')
+        for _ in range(batch_size):
+            first.append(sentence_token(lines[1]))
+            second.append(sentence_token(lines[2]))
+            ids.append(lines[0]) 
+    batch_count = 0
+    while True:
+        if batch_count * batch_size + batch_size > len(first):
+            batch_count = 0
+        start = batch_count * batch_size
+        end = start + batch_size
+        batch_count += 1
+        first_batch_pad, first_seq_length = pad_sentence_batch(
+            first[start:end])
+        second_batch_pad, second_seq_length = pad_sentence_batch(
+            second[start:end])
+        ids_batch = ids[start:end]
+        yield (ids_batch,first_batch_pad, first_seq_length,second_batch_pad, second_seq_length)
+
+def generate_batch_shell(source_sentence, batch_size=batch_size):
     ids = []
     first = []
     second = []
     simi = []
     lines = source_sentence.strip().split('__user_')
     jieba.load_userdict(mydict)
-    for _ in range(32):
+    for _ in range(batch_size):
         newline0 = " ".join(jieba.cut(lines[0]))
         newline1 = " ".join(jieba.cut(lines[0]))
         first.append(sentence_token(newline0))
