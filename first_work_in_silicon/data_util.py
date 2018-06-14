@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+
+__author__ = 'luheng'
+
 import time
 import numpy as np
 import jieba
 import os
 import subprocess
 from gensim.models import word2vec
-from config import Config
+from parameters import Para
 
-embedding_size = Config.embedding_size
-unk = Config.unk
-pad = Config.pad
-tgt_sos = Config.tgt_sos
-tgt_eos = Config.tgt_eos
+embedding_size = Para.embedding_size
+unk = Para.unk
+pad = Para.pad
+tgt_sos = Para.tgt_sos
+tgt_eos = Para.tgt_eos
 origin_path = 'data/origin.csv'
 cut_path = 'data/cut.csv'
 mydict = 'data/dict.txt'

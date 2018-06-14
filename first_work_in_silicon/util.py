@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-util.py: General utility routines
-"""
+from __future__ import absolute_import
+from __future__ import division
+
+__author__ = 'luheng'
 
 import sys
 import re

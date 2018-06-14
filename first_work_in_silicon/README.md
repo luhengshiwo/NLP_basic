@@ -41,15 +41,20 @@ to get the result in test set.
 
 ## Folder Structure
 ```
-|--- data            - this fold contains all the data
-│   |--- train
-│   |--- dev
-│   |--- test
-│   |--- vocab
-|   |--- vec
-|--- model           - this fold contains the pkl file to restore
-|--- little_try.py   - main entrance of the project
-|--- data_util.py    - preprocess the data
-|--- batch_data.py   - data generator
-|--- my_evaluate.py  - evaluate the performance of the model in test set           
+├── data            - this fold contains all the data
+│   ├── train
+│   ├── dev
+│   ├── test
+│   ├── vocab
+|   ├── vec
+├── model           - this fold contains the pkl file to restore
+├── little_try.py   - main entrance of the project
+├── data_util.py    - preprocess the data
+├── batch_data.py   - data generator
+├── my_evaluate.py  - evaluate the performance of the model in test set   
 ```
+
+## To do
+1. Still need parameters searching.
+2. Need structure changing to satisfy parameters chosing.
+3. Make codes nicer.

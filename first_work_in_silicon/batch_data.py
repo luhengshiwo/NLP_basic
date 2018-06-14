@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+
+__author__ = 'luheng'
+
 import time
 import os
 import numpy as np
-from config import Config
+from parameters import Para
 from gensim.models import word2vec
 import jieba
 '''
@@ -20,12 +25,12 @@ mydict = 'data/dict.txt'
 source_path = 'data/train.csv'
 vocab_path = 'data/vocab.txt'
 vec_path = 'data/vec.txt'
-unk = Config.unk
-pad = Config.pad
-batch_size = Config.batch_size
+unk = Para.unk
+pad = Para.pad
+batch_size = Para.batch_size
 voc = []
 vec = []
-embedding_size = Config.embedding_size
+embedding_size = Para.embedding_size
 
 def vocab_parse(path, vocab):
     for line in open(path):

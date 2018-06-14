@@ -19,7 +19,7 @@ import sys
 from sklearn import metrics
 import os
 import time
-from config import Config
+from parameters import Para
 import logging
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
@@ -35,23 +35,33 @@ logger.addHandler(fh)
 
 vec, voc = embeddings()
 vocab_size = len(vec)
-batch_size = Config.batch_size
-# batch_size = 1
-num_units = Config.num_units
-max_gradient_norm = Config.max_gradient_norm
-learning_rate = Config.learning_rate
-n_epochs = Config.n_epochs
-n_outputs = Config.n_outputs
-train_keep_prob = Config.train_keep_prob
-train_num = Config.train_num
-dev_num = Config.dev_num
+batch_size = Para.batch_size
+num_units = Para.num_units
+max_gradient_norm = Para.max_gradient_norm
+learning_rate = Para.learning_rate
+n_epochs = Para.n_epochs
+n_outputs = Para.n_outputs
+train_keep_prob = Para.train_keep_prob
+train_num = Para.train_num
+dev_num = Para.dev_num
+l2_rate = Para.l2_rate
 best_loss = np.infty
+threshold = Para.threshold
 epochs_without_progress = 0
 max_epochs_without_progress = 50
 checkpoint_path = "model/tmp/my_logreg_model.ckpt"
 checkpoint_epoch_path = checkpoint_path + ".epoch"
 final_model_path = "model/my_logreg_model"
 
+'''
+tricks:
+1,he_init or Xavier or None
+2,GRU or Bi-GRU
+3,LuongAttention or BahdanauAttention
+4,L1_regularization or L2_regularization or None
+5,Gradient Clipping or None
+6,Adam Momentum RMSProp Adadelta
+'''
 with tf.name_scope("placeholder"):
     encode_question = tf.placeholder(tf.int32, shape=[batch_size, None])
     encode_answer = tf.placeholder(tf.int32, shape=[batch_size, None])
@@ -70,18 +80,27 @@ with tf.name_scope('word_embeddings'):
     answer_emb = tf.nn.embedding_lookup(embeddings, answer)
 
 with tf.name_scope("decode"):
+    # initializer
+    he_init = tc.layers.variance_scaling_initializer()
+    Xavier = tc.layers.xavier_initializer()
+
+    '''
+    GRU
+    '''
     # with tf.variable_scope("question"):
     #     question_cell = tf.nn.rnn_cell.GRUCell(num_units)
     #     question_drop = tc.rnn.DropoutWrapper(
     #         question_cell, input_keep_prob=keep_prob)
     #     question_outputs, question_state = tf.nn.dynamic_rnn(
     #         question_drop, question_emb, sequence_length=question_sequence_length, time_major=True, dtype=tf.float32)
-
+    '''
+    Bi-GRU
+    '''
     with tf.variable_scope("question"):
-        forward_cell = tf.nn.rnn_cell.GRUCell(num_units)
+        forward_cell = tc.rnn.GRUCell(num_units, kernel_initializer=he_init)
         forward_cell_drop = tc.rnn.DropoutWrapper(
             forward_cell, input_keep_prob=keep_prob)
-        backward_cell = tf.nn.rnn_cell.GRUCell(num_units)
+        backward_cell = tc.rnn.GRUCell(num_units, kernel_initializer=he_init)
         backward_cell_drop = tc.rnn.DropoutWrapper(
             backward_cell, input_keep_prob=keep_prob)
         bi_question_outputs, bi_question_state = tf.nn.bidirectional_dynamic_rnn(
@@ -91,7 +110,7 @@ with tf.name_scope("decode"):
 
     with tf.variable_scope("answer"):
         attention_states = tf.transpose(question_outputs, (1, 0, 2))
-        answer_cell = tf.nn.rnn_cell.GRUCell(num_units)
+        answer_cell = tc.rnn.GRUCell(num_units, kernel_initializer=he_init)
         answer_drop = tc.rnn.DropoutWrapper(
             answer_cell, input_keep_prob=keep_prob)
         """
@@ -124,12 +143,25 @@ with tf.name_scope("logits"):
     labels = tf.cast(labels, tf.float32)
     xentropy = tf.nn.sigmoid_cross_entropy_with_logits(
         labels=labels, logits=logits)
-    loss = tf.reduce_mean(xentropy)
+    base_loss = tf.reduce_mean(xentropy)
+    # regularization
+    reg_losses = tc.layers.apply_regularization(
+        tc.layers.l2_regularizer(l2_rate), tf.trainable_variables())
+    loss = base_loss + reg_losses
     loss_summary = tf.summary.scalar('log_loss', loss)
 
 with tf.name_scope("optimizer"):
+    # optimizer = tf.train.MomentumOptimizer(momentum=0.9,learning_rate=learning_rate)
+    # optimizer = tf.train.RMSPropOptimizer(learning_rate=learning_rate)
+    # optimizer = tf.train.AdadeltaOptimizer(learning_rate=learning_rate)    
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-    training_op = optimizer.minimize(loss)
+    # training_op = optimizer.minimize(loss)
+    # Gradient Clipping
+    grads_and_vars = optimizer.compute_gradients(loss)
+    capped_gvs = [(tf.clip_by_value(grad, -threshold, threshold), var)
+                for grad, var in grads_and_vars]
+    training_op = optimizer.apply_gradients(capped_gvs)
+
     logits_soft = tf.sigmoid(logits)
     pred = tf.cast(tf.round(logits_soft), tf.int32)
     correct = tf.equal(pred, simi_values)
@@ -154,11 +186,15 @@ file_writer = tf.summary.FileWriter(logdir, tf.get_default_graph())
 
 
 def do_train(args):
+    tic = time.time()
     train_data = args.train_data
     dev_data = args.dev_data
     epochs_without_progress = 0
     max_epochs_without_progress = 50
     best_f1 = 0.0
+    best_epoch = 0
+    best_precision = 0.0
+    best_recall = 0.0
     with tf.Session(config=config) as sess:
         train_gen = generate_batch(
             train_data, batch_size=batch_size)
@@ -220,13 +256,20 @@ def do_train(args):
                     logger.info('save epoch:{}'.format(epoch))
                     saver.save(sess, final_model_path)
                     best_f1 = f1_dev
+                    best_precision = precision_dev
+                    best_epoch = epoch
+                    best_recall = recall_dev
                 else:
                     epochs_without_progress += 1
                     if epochs_without_progress > max_epochs_without_progress:
                         logger.info("Early stopping")
                         break
         os.remove(checkpoint_epoch_path)
-
+        tok = time.time()
+        cost = tok-tic
+        logger.info("best_epoch:{}".format(best_epoch)+"\tbest_precision:{:.5f}".format(
+                    best_precision)+"\tbest_recall:{:.5f}".format(best_recall)+"\tbest_f1:{:.5f}".format(best_f1))
+        logger.info('final training time:{:.2f}'.format(cost))
 
 def do_evaluate(args):
     inpath = args.test_data
