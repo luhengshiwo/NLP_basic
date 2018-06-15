@@ -86,9 +86,9 @@ with tf.name_scope('decode'):
         start_tokens = tf.fill([batch_size], tgt_sos_id)
         end_token = tgt_eos_id
         #将attention_states(就是源语言的encoder)，源语言长度，复制beam_width次
-        beam_attention_states = tf.contrib.seq2seq.tile_batch(
+        beam_attention_states = tc.seq2seq.tile_batch(
             attention_states, multiplier=beam_width)
-        lengths = tf.contrib.seq2seq.tile_batch(
+        lengths = tc.seq2seq.tile_batch(
             source_sequence_length, multiplier=beam_width)
         #attebtion机制
         attention_mechanism = tc.seq2seq.LuongAttention(
@@ -98,7 +98,7 @@ with tf.name_scope('decode'):
                                                             attention_mechanism=attention_mechanism,
                                                             attention_layer_size=num_units)
         #将encoder的最后一个state复制beam_width次
-        init_state = tf.contrib.seq2seq.tile_batch(
+        init_state = tc.seq2seq.tile_batch(
             encoder_state, multiplier=beam_width)
         #初始化init_state
         decoder_initial_state = decoder_cell_wrap_pre.zero_state(
@@ -134,7 +134,7 @@ with tf.name_scope('loss'):
     masks = tf.sequence_mask(target_sequence_length,
                              max_target_sequence_length, dtype=tf.float32, name='masks')
     # loss
-    cost = tf.contrib.seq2seq.sequence_loss(
+    cost = tc.seq2seq.sequence_loss(
         training_logits, decoder_outputs, masks)
     train_loss = (tf.reduce_sum(cost) / batch_size)
 
@@ -159,6 +159,7 @@ with tf.Session() as sess:
         for i in range(int(num / batch_size)):
             encoder_inputs_batch, decoder_inputs_batch, decoder_outputs_batch, encoder_length_batch, decoder_length_batch = generate_batch(source_path, target_path,
                                                                                                                                            batch_size)
+            print(np.shape(decoder_outputs_batch),np.shape(encoder_inputs_batch),np.shape(decoder_outputs_batch),np.shape(encoder_length_batch),np.shape(decoder_length_batch))
             _, loss = sess.run([update_step, train_loss], feed_dict={encoder_inputs_x: encoder_inputs_batch,
                                                                      decoder_inputs_y1: decoder_inputs_batch, decoder_outputs_y2: decoder_outputs_batch,
                                                                      source_sequence_length: encoder_length_batch, target_sequence_length: decoder_length_batch})
