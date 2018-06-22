@@ -1,0 +1,71 @@
+2018-06-21 14:50:49,135:INFO:epoch:0	epoch_loss:1.07522
+2018-06-21 14:50:49,907:INFO:epoch:0	Dev loss:1.08632	precision_dev:0.63736	recall_dev:0.79817	f1_dev:0.70876
+2018-06-21 14:50:50,100:INFO:save epoch:0
+2018-06-21 14:51:18,968:INFO:epoch:1	epoch_loss:0.70283
+2018-06-21 14:51:19,421:INFO:epoch:1	Dev loss:0.88260	precision_dev:0.74000	recall_dev:0.67890	f1_dev:0.70813
+2018-06-21 14:51:47,771:INFO:epoch:2	epoch_loss:0.90327
+2018-06-21 14:51:48,227:INFO:epoch:2	Dev loss:0.75935	precision_dev:0.78341	recall_dev:0.77982	f1_dev:0.78161
+2018-06-21 14:51:48,345:INFO:save epoch:2
+2018-06-21 14:52:16,302:INFO:epoch:3	epoch_loss:0.68706
+2018-06-21 14:52:16,752:INFO:epoch:3	Dev loss:0.63608	precision_dev:0.83645	recall_dev:0.82110	f1_dev:0.82870
+2018-06-21 14:52:16,870:INFO:save epoch:3
+2018-06-21 14:52:45,076:INFO:epoch:4	epoch_loss:0.49810
+2018-06-21 14:52:45,531:INFO:epoch:4	Dev loss:0.61124	precision_dev:0.85437	recall_dev:0.80734	f1_dev:0.83019
+2018-06-21 14:52:45,649:INFO:save epoch:4
+2018-06-21 14:53:15,165:INFO:epoch:5	epoch_loss:0.58925
+2018-06-21 14:53:15,613:INFO:epoch:5	Dev loss:0.57086	precision_dev:0.85854	recall_dev:0.80734	f1_dev:0.83215
+2018-06-21 14:53:15,730:INFO:save epoch:5
+2018-06-21 14:53:43,931:INFO:epoch:6	epoch_loss:0.50161
+2018-06-21 14:53:44,383:INFO:epoch:6	Dev loss:0.52451	precision_dev:0.88832	recall_dev:0.80275	f1_dev:0.84337
+2018-06-21 14:53:44,500:INFO:save epoch:6
+2018-06-21 14:54:12,604:INFO:epoch:7	epoch_loss:0.50572
+2018-06-21 14:54:13,057:INFO:epoch:7	Dev loss:0.43184	precision_dev:0.90826	recall_dev:0.90826	f1_dev:0.90826
+2018-06-21 14:54:13,175:INFO:save epoch:7
+2018-06-21 14:54:42,954:INFO:epoch:8	epoch_loss:0.50665
+2018-06-21 14:54:43,410:INFO:epoch:8	Dev loss:0.42392	precision_dev:0.89224	recall_dev:0.94954	f1_dev:0.92000
+2018-06-21 14:54:43,528:INFO:save epoch:8
+2018-06-21 14:55:11,817:INFO:epoch:9	epoch_loss:0.47140
+2018-06-21 14:55:12,266:INFO:epoch:9	Dev loss:0.41063	precision_dev:0.89623	recall_dev:0.87156	f1_dev:0.88372
+2018-06-21 14:55:40,366:INFO:epoch:10	epoch_loss:0.30781
+2018-06-21 14:55:40,818:INFO:epoch:10	Dev loss:0.38617	precision_dev:0.92718	recall_dev:0.87615	f1_dev:0.90094
+2018-06-21 14:56:09,063:INFO:epoch:11	epoch_loss:0.59095
+2018-06-21 14:56:09,514:INFO:epoch:11	Dev loss:0.33988	precision_dev:0.92478	recall_dev:0.95872	f1_dev:0.94144
+2018-06-21 14:56:09,631:INFO:save epoch:11
+2018-06-21 14:56:39,964:INFO:epoch:12	epoch_loss:0.32377
+2018-06-21 14:56:40,447:INFO:epoch:12	Dev loss:0.28275	precision_dev:0.96313	recall_dev:0.95872	f1_dev:0.96092
+2018-06-21 14:56:40,568:INFO:save epoch:12
+2018-06-21 14:57:11,895:INFO:epoch:13	epoch_loss:0.41987
+2018-06-21 14:57:12,354:INFO:epoch:13	Dev loss:0.31895	precision_dev:0.90171	recall_dev:0.96789	f1_dev:0.93363
+2018-06-21 14:57:40,393:INFO:epoch:14	epoch_loss:0.32359
+2018-06-21 14:57:40,839:INFO:epoch:14	Dev loss:0.33124	precision_dev:0.96000	recall_dev:0.88073	f1_dev:0.91866
+2018-06-21 14:58:08,737:INFO:epoch:15	epoch_loss:0.28782
+2018-06-21 14:58:09,183:INFO:epoch:15	Dev loss:0.26264	precision_dev:0.95890	recall_dev:0.96330	f1_dev:0.96110
+2018-06-21 14:58:09,300:INFO:save epoch:15
+2018-06-21 14:58:37,026:INFO:epoch:16	epoch_loss:0.19599
+2018-06-21 14:58:37,480:INFO:epoch:16	Dev loss:0.23179	precision_dev:0.97696	recall_dev:0.97248	f1_dev:0.97471
+2018-06-21 14:58:37,598:INFO:save epoch:16
+2018-06-21 14:59:05,572:INFO:epoch:17	epoch_loss:0.32184
+2018-06-21 14:59:06,022:INFO:epoch:17	Dev loss:0.25772	precision_dev:0.97664	recall_dev:0.95872	f1_dev:0.96759
+2018-06-21 14:59:34,114:INFO:epoch:18	epoch_loss:0.43089
+2018-06-21 14:59:34,562:INFO:epoch:18	Dev loss:0.27491	precision_dev:0.98058	recall_dev:0.92661	f1_dev:0.95283
+2018-06-21 15:00:02,420:INFO:epoch:19	epoch_loss:0.25708
+2018-06-21 15:00:02,868:INFO:epoch:19	Dev loss:0.24238	precision_dev:0.98077	recall_dev:0.93578	f1_dev:0.95775
+2018-06-21 15:00:03,001:INFO:best_epoch:16	best_precision:0.97696	best_recall:0.97248	best_f1:0.97471
+2018-06-21 15:00:03,001:INFO:final training time:586.75
+2018-06-21 15:00:32,136:INFO:evaluation done! out_path:data/out.csv
+2018-06-21 15:07:33,420:INFO:evaluation done! out_path:data/out.csv
+2018-06-21 15:07:33,420:INFO:each evaluate time of single data:13.25
+2018-06-21 15:07:55,330:INFO:evaluation done! out_path:data/out.csv
+2018-06-21 15:07:55,331:INFO:each evaluate time of single data:0.00
+2018-06-21 15:08:29,337:INFO:evaluation done! out_path:data/out.csv
+2018-06-21 15:08:29,337:INFO:each evaluate time of single data:0.71ms
+2018-06-21 15:08:56,237:INFO:evaluation done! out_path:data/out.csv
+2018-06-21 15:08:56,237:INFO:each evaluate time of single data:2.42ms
+2018-06-21 15:09:27,912:INFO:evaluation done! out_path:data/out.csv
+2018-06-21 15:09:27,913:INFO:each evaluate time of single data:3.00ms
+2018-06-22 09:35:39,038:INFO:epoch:0	epoch_loss:1.13997
+2018-06-22 09:35:39,858:INFO:epoch:0	Dev loss:1.08142	precision_dev:0.73633	recall_dev:0.73633	f1_dev:0.73633
+2018-06-22 09:35:40,108:INFO:save epoch:0
+2018-06-22 09:36:13,017:INFO:epoch:1	epoch_loss:0.69486
+2018-06-22 09:36:13,823:INFO:epoch:1	Dev loss:0.88824	precision_dev:0.76367	recall_dev:0.76367	f1_dev:0.76367
+2018-06-22 09:36:13,970:INFO:save epoch:1
